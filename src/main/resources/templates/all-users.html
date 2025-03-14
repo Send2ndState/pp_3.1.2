@@ -23,7 +23,7 @@
         <td th:text="${user.password}">user</td>
         <td th:text="${user.email}">user</td>
         <td>
-            <form method="get" th:action="@{/edit}">
+            <form method="get" th:action="@{/admin/edit}">
                 <input type="hidden" name="id" th:value="${user.id}">
                 <input type="submit" value="Update">
             </form>
@@ -35,8 +35,14 @@
     </tr>
 </table>
 <br>
-<form method="get" th:action="@{/new}">
+<form method="get" th:action="@{/admin/new_user}">
     <input type="submit" value="Create new user">
+</form>
+<br>
+<br>
+<br>
+<form method="post" th:action="@{/logout}">
+    <input type="submit" value="Log out">
 </form>
 
 </body>

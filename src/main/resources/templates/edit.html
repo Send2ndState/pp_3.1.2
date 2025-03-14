@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<form th:method="POST" th:action="@{/update}" th:object="${user}">
+<form th:method="POST" th:action="@{/submit}" th:object="${user}">
     <input type="hidden" th:field="*{id}">
     <label for="name">Enter name: </label>
     <input type="text" th:field="*{name}" id="name"/>
@@ -14,13 +14,22 @@
     <label for="username">Enter username: </label>
     <input type="text" th:field="*{username}" id="username"/>
     <br/>
-    <label for="password">Enter email: </label>
+    <label for="password">Enter password: </label>
     <input type="text" th:field="*{password}" id="password"/>
     <br/>
     <label for="email">Enter email: </label>
     <input type="text" th:field="*{email}" id="email"/>
     <br/>
     <input type="submit" value="Update user"/>
+    <br/>
+    <label>Roles:
+        <input type="checkbox" name="roles"
+               th:each="role : ${allRoles}"
+               th:text="${role.name}"
+               th:value="${role.id}"
+               th:field="*{roles}"
+        />
+    </label>
 </form>
 
 </body>
