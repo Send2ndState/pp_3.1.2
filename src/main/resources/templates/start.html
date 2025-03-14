@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Start Page</title>
+</head>
+<body>
+<table border="1" style="width:300px">
+    <tr>
+        <th>#</th>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Email</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="user,iterationStatus : ${users}">
+        <th th:text="${iterationStatus.count}"></th>
+        <td th:text="${user.id}">user</td>
+        <td th:text="${user.name}">user</td>
+        <td th:text="${user.username}">user</td>
+        <td th:text="${user.password}">user</td>
+        <td th:text="${user.email}">user</td>
+        <td>
+            <form method="get" th:action="@{/edit}">
+                <input type="hidden" name="id" th:value="${user.id}">
+                <input type="submit" value="Update">
+            </form>
+            <form method="post" th:action="@{/delete}">
+                <input type="hidden" name="id" th:value="${user.id}">
+                <input type="submit" value="Delete">
+            </form>
+        </td>
+    </tr>
+</table>
+<br>
+<form method="get" th:action="@{/new}">
+    <input type="submit" value="Create new user">
+</form>
+
+</body>
+</html>
