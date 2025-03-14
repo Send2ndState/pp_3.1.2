@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<form th:method="POST" th:action="@{/submit}" th:object="${user}">
+<form th:method="POST" th:action="@{/admin/submit}" th:object="${user}">
     <input type="hidden" th:field="*{id}">
     <label for="name">Enter name: </label>
     <input type="text" th:field="*{name}" id="name"/>
@@ -24,7 +24,7 @@
     <br/>
     <label>Roles:
         <input type="checkbox" name="roles"
-               th:each="role : ${allRoles}"
+               th:each="role : ${roles}"
                th:text="${role.name}"
                th:value="${role.id}"
                th:field="*{roles}"
