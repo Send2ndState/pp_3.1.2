@@ -129,7 +129,7 @@
                                            required>
 
                                     <label for="age">Age:</label>
-                                    <input type="text" class="form-control" id="age" th:field="*{age}"
+                                    <input type="number" class="form-control" id="age" th:field="*{age}"
                                            required>
 
                                     <label for="email">Email:</label>
@@ -140,9 +140,9 @@
                                            required>
 
                                     <label for="roles">Roles:</label>
-                                    <select class="form-select" id="roles" th:object="${roles}" multiple>
-                                        <option th:each="role : ${roles}" th:value="${role.id}"
-                                                th:text="${role.name}"></option>
+                                    <select class="form-select" id="roles" th:field="*{roles}" multiple>
+                                        <option th:each="role : ${roles}" th:value="${role.id}" th:role="${role.name}"
+                                                th:text="${role.toString()}"></option>
                                     </select>
 
                                     <button type="submit" class="btn btn-success mt-3">Add new user</button>
@@ -156,6 +156,9 @@
                 <div class="tab-pane fade" id="user">
                     <div class="container-fluid py-3 px-0">
                         <h2>User information-page</h2>
+                    </div>
+                    <div class="p-3 px-4 border-top">
+                        <h5>About user</h5>
                     </div>
                     <table class="table table-striped">
                         <thead>
@@ -175,7 +178,7 @@
                             <td th:text="*{username}"></td>
                             <td th:text="*{age}"></td>
                             <td th:text="*{email}"></td>
-                            <td th:text="*{roles}"></td>
+                            <td th:text="${userView.getStringRoles()}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -204,12 +207,12 @@
                         <input type="text" class="form-control" id="editUserName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editUserUsername" class="form-label">Name</label>
+                        <label for="editUserUsername" class="form-label">Username</label>
                         <input type="text" class="form-control" id="editUserUsername" required>
                     </div>
                     <div class="mb-3">
                         <label for="editUserAge" class="form-label">Age</label>
-                        <input type="text" class="form-control" id="editUserAge" required>
+                        <input type="number" class="form-control" id="editUserAge" required>
                     </div>
                     <div class="mb-3">
                         <label for="editUserEmail" class="form-label">Email</label>
@@ -222,7 +225,7 @@
                     <div class="mb-3">
                         <label for="editUserRoles" class="form-label">Roles</label>
                         <select class="form-select" id="editUserRoles" multiple>
-                            <option th:each="role : *{roles}" th:value="${role.id}"
+                            <option th:each="role : *{roles}" th:value="${role.id}" th:role="${role.name}"
                                     th:text="${role.toString()}"></option>
                         </select>
                     </div>
@@ -255,12 +258,12 @@
                         <input disabled type="text" class="form-control" id="deleteUserName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="deleteUserUsername" class="form-label">Name</label>
+                        <label for="deleteUserUsername" class="form-label">Username</label>
                         <input disabled type="text" class="form-control" id="deleteUserUsername" required>
                     </div>
                     <div class="mb-3">
                         <label for="deleteUserAge" class="form-label">Age</label>
-                        <input disabled type="text" class="form-control" id="deleteUserAge" required>
+                        <input disabled type="number" class="form-control" id="deleteUserAge" required>
                     </div>
                     <div class="mb-3">
                         <label for="deleteUserEmail" class="form-label">Email</label>
@@ -315,13 +318,17 @@
                         document.getElementById("editUserForm").onsubmit = function (event) {
                             event.preventDefault();
 
+                            const selectedRoles = Array.from(document.getElementById("editUserRoles").selectedOptions)
+                                .map(option => ({ id: option.value, name: option.role }));
+
                             const updatedUser = {
                                 id: document.getElementById("editUserId").value,
                                 name: document.getElementById("editUserName").value,
                                 username: document.getElementById("editUserUsername").value,
                                 age: document.getElementById("editUserAge").value,
                                 email: document.getElementById("editUserEmail").value,
-                                roles: document.getElementById("editUserRoles").value
+                                password: document.getElementById("editUserPassword").value,
+                                roles: selectedRoles
                             };
 
                             fetch(`/admin/api`, {
