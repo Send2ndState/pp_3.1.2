@@ -45,11 +45,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with email '%s' not found", email)));
 
-        // Логирование ролей пользователя
-        System.out.println("User roles: " + mapRolesToAuthorities(user.getRoles()));
-
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(), // Используем email как username
+                user.getEmail(),
                 user.getPassword(),
                 mapRolesToAuthorities(user.getRoles())
         );
