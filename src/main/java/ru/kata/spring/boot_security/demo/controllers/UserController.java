@@ -24,9 +24,8 @@ public class UserController {
     }
 
     @GetMapping()
-    public String user(Model model, Principal principal) {
-        User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new RuntimeException("unable to fing user by username: " + principal.getName()));
-        model.addAttribute("user", user);
+    public String user(Model model) {
+        model.addAttribute("user", userService.getCurrentUser());
         return "user";
     }
 

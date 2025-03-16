@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -23,6 +24,9 @@ public class User implements UserDetails {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "age")
+    private Byte age;
+
     @Column(name = "password")
     private String password;
 
@@ -38,9 +42,10 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String username, String password, String email) {
+    public User(String name, String username, Byte age, String password, String email) {
         this.name = name;
         this.username = username;
+        this.age = age;
         this.password = password;
         this.email = email;
     }
@@ -69,6 +74,14 @@ public class User implements UserDetails {
         this.username = username;
     }
 
+    public Byte getAge() {
+        return age;
+    }
+
+    public void setAge(Byte age) {
+        this.age = age;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -87,6 +100,9 @@ public class User implements UserDetails {
 
     public Set<Role> getRoles() {
         return roles;
+    }
+    public String getStringRoles(){
+        return roles.toString().replaceAll("^\\[|]$", "").replaceAll(",", " ");
     }
 
     public void setRoles(Set<Role> roles) {
@@ -123,8 +139,22 @@ public class User implements UserDetails {
         return "User{" +
                 "name='" + name + '\'' +
                 ", username='" + username + '\'' +
+                ", age=" + age +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
+                ", roles=" + roles +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
