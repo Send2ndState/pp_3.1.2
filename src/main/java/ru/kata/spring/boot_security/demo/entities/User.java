@@ -2,12 +2,14 @@ package ru.kata.spring.boot_security.demo.entities;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -18,11 +20,11 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "first_name")
+    private String firstName;
 
-    @Column(name = "username")
-    private String username;
+    @Column(name = "last_name")
+    private String lastName;
 
     @Column(name = "age")
     private Byte age;
@@ -30,7 +32,7 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @ManyToMany
@@ -42,9 +44,9 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String username, Byte age, String password, String email) {
-        this.name = name;
-        this.username = username;
+    public User(String firstName, String lastName, Byte age, String password, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.age = age;
         this.password = password;
         this.email = email;
@@ -58,20 +60,20 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getUsername() {
-        return username;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Byte getAge() {
@@ -84,6 +86,11 @@ public class User implements UserDetails {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     public void setPassword(String password) {
@@ -131,14 +138,14 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles;
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList());
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "name='" + name + '\'' +
-                ", username='" + username + '\'' +
+                "name='" + firstName + '\'' +
+                ", username='" + lastName + '\'' +
                 ", age=" + age +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +

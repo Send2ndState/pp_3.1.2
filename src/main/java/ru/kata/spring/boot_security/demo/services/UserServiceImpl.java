@@ -41,9 +41,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found", username)));
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User with email '%s' not found", email)));
+
+        // Логирование ролей пользователя
+        System.out.println("User roles: " + mapRolesToAuthorities(user.getRoles()));
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(), // Используем email как username
+                user.getPassword(),
+                mapRolesToAuthorities(user.getRoles())
+        );
     }
 
     @Transactional(readOnly = true)
@@ -52,8 +61,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Transactional(readOnly = true)
@@ -77,9 +86,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional(readOnly = true)
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+        String email = authentication.getName(); // Получаем email текущего пользователя
+        return findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
+
     @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
@@ -92,4 +102,3 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.save(user);
     }
 }
-

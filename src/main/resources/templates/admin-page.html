@@ -15,6 +15,7 @@
         .form-select {
             height: 60px;
         }
+
     </style>
 </head>
 <body>
@@ -76,8 +77,8 @@
                                 <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Username</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
                                     <th>Age</th>
                                     <th>Email</th>
                                     <th>Role</th>
@@ -88,13 +89,13 @@
                                 <tbody>
                                 <tr th:each="user : ${users}">
                                     <td th:text="${user.id}"></td>
-                                    <td th:text="${user.name}"></td>
-                                    <td th:text="${user.username}"></td>
+                                    <td th:text="${user.firstName}"></td>
+                                    <td th:text="${user.lastName}"></td>
                                     <td th:text="${user.age}"></td>
                                     <td th:text="${user.email}"></td>
                                     <td th:text="${user.getStringRoles()}"></td>
                                     <td>
-                                        <button type="button" class="btn btn-info btn-sm edit-user-btn"
+                                        <button type="button" class="btn btn-primary btn-sm edit-user-btn"
                                                 data-bs-toggle="modal" data-bs-target="#editUserModal"
                                                 th:data-userid="${user.id}">
                                             Edit
@@ -121,11 +122,11 @@
                                 <form style="max-width: 350px;" class="col text-center fw-bold"
                                       th:action="@{/admin/submit}"
                                       th:object="${userNew}" method="post">
-                                    <label for="name">Name</label>
-                                    <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                    <label for="name">First Name</label>
+                                    <input type="text" class="form-control" id="name" th:field="*{firstName}" required>
 
-                                    <label for="username">Username:</label>
-                                    <input type="text" class="form-control" id="username" th:field="*{username}"
+                                    <label for="username">Last Name:</label>
+                                    <input type="text" class="form-control" id="username" th:field="*{lastName}"
                                            required>
 
                                     <label for="age">Age:</label>
@@ -164,8 +165,8 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Username</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
                             <th>Age</th>
                             <th>Email</th>
                             <th>Role</th>
@@ -174,8 +175,8 @@
                         <tbody>
                         <tr th:object="${userView}">
                             <td th:text="*{id}"></td>
-                            <td th:text="*{name}"></td>
-                            <td th:text="*{username}"></td>
+                            <td th:text="*{firstName}"></td>
+                            <td th:text="*{lastName}"></td>
                             <td th:text="*{age}"></td>
                             <td th:text="*{email}"></td>
                             <td th:text="${userView.getStringRoles()}"></td>
@@ -196,44 +197,45 @@
                 <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
             </div>
             <div class="modal-body">
-                <form id="editUserForm">
-                    <!--                    <input type="hidden" id="editUserId">-->
-                    <div class="mb-3">
-                        <label for="editUserId" class="form-label">ID</label>
-                        <input disabled type="text" class="form-control" id="editUserId" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="editUserName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserUsername" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="editUserUsername" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserAge" class="form-label">Age</label>
-                        <input type="number" class="form-control" id="editUserAge" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="editUserEmail" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserPassword" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="editUserPassword" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserRoles" class="form-label">Roles</label>
-                        <select class="form-select" id="editUserRoles" multiple>
-                            <option th:each="role : *{roles}" th:value="${role.id}" th:role="${role.name}"
-                                    th:text="${role.toString()}"></option>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-info">Edit</button>
-                    </div>
-                </form>
+                <div class="row justify-content-center">
+                    <form id="editUserForm" style="max-width: 350px;" class="col text-center fw-bold">
+                        <div class="mb-3">
+                            <label for="editUserId" class="form-label">ID</label>
+                            <input disabled type="text" class="form-control" id="editUserId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editUserFirstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editUserLastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserAge" class="form-label">Age</label>
+                            <input type="number" class="form-control" id="editUserAge" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editUserEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="editUserPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserRoles" class="form-label">Roles</label>
+                            <select class="form-select" id="editUserRoles" multiple>
+                                <option th:each="role : *{roles}" th:value="${role.id}" th:role="${role.name}"
+                                        th:text="${role.toString()}"></option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Edit</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -247,40 +249,42 @@
                 <h5 class="modal-title" id="deleteUserModalLabel">Delete User</h5>
             </div>
             <div class="modal-body">
-                <form id="deleteUserForm">
-                    <!--                    <input type="hidden" id="editUserId">-->
-                    <div class="mb-3">
-                        <label for="deleteUserId" class="form-label">ID</label>
-                        <input disabled type="text" class="form-control" id="deleteUserId" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="deleteUserName" class="form-label">Name</label>
-                        <input disabled type="text" class="form-control" id="deleteUserName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="deleteUserUsername" class="form-label">Username</label>
-                        <input disabled type="text" class="form-control" id="deleteUserUsername" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="deleteUserAge" class="form-label">Age</label>
-                        <input disabled type="number" class="form-control" id="deleteUserAge" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="deleteUserEmail" class="form-label">Email</label>
-                        <input disabled type="email" class="form-control" id="deleteUserEmail" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="deleteUserRoles" class="form-label">Roles</label>
-                        <select disabled class="form-select" id="deleteUserRoles" multiple>
-                            <option th:each="role : ${roles}" th:value="${role.id}"
-                                    th:text="${role.toString()}"></option>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </div>
-                </form>
+                <div class="row justify-content-center">
+                    <form id="deleteUserForm" style="max-width: 350px;" class="col text-center fw-bold">
+                        <!--                    <input type="hidden" id="editUserId">-->
+                        <div class="mb-3">
+                            <label for="deleteUserId" class="form-label">ID</label>
+                            <input disabled type="text" class="form-control" id="deleteUserId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserFirstName" class="form-label">First Name</label>
+                            <input disabled type="text" class="form-control" id="deleteUserFirstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserLastName" class="form-label">Last Name</label>
+                            <input disabled type="text" class="form-control" id="deleteUserLastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserAge" class="form-label">Age</label>
+                            <input disabled type="number" class="form-control" id="deleteUserAge" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserEmail" class="form-label">Email</label>
+                            <input disabled type="email" class="form-control" id="deleteUserEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserRoles" class="form-label">Roles</label>
+                            <select disabled class="form-select" id="deleteUserRoles" multiple>
+                                <option th:each="role : ${roles}" th:value="${role.id}"
+                                        th:text="${role.toString()}"></option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -303,11 +307,10 @@
                     .then(response => response.json())
                     .then(user => {
                         document.getElementById("editUserId").value = user.id;
-                        document.getElementById("editUserName").value = user.name;
-                        document.getElementById("editUserUsername").value = user.username;
+                        document.getElementById("editUserFirstName").value = user.firstName;
+                        document.getElementById("editUserLastName").value = user.lastName;
                         document.getElementById("editUserAge").value = user.age;
                         document.getElementById("editUserEmail").value = user.email;
-                        document.getElementById("editUserPassword").value = user.password;
                         document.getElementById("editUserRoles").value = user.roles;
 
                         // Открываем модальное окно
@@ -319,12 +322,12 @@
                             event.preventDefault();
 
                             const selectedRoles = Array.from(document.getElementById("editUserRoles").selectedOptions)
-                                .map(option => ({ id: option.value, name: option.role }));
+                                .map(option => ({id: option.value, name: option.role}));
 
                             const updatedUser = {
                                 id: document.getElementById("editUserId").value,
-                                name: document.getElementById("editUserName").value,
-                                username: document.getElementById("editUserUsername").value,
+                                firstName: document.getElementById("editUserFirstName").value,
+                                lastName: document.getElementById("editUserLastName").value,
                                 age: document.getElementById("editUserAge").value,
                                 email: document.getElementById("editUserEmail").value,
                                 password: document.getElementById("editUserPassword").value,
@@ -333,7 +336,7 @@
 
                             fetch(`/admin/api`, {
                                 method: "POST",
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: {'Content-Type': 'application/json'},
                                 body: JSON.stringify(updatedUser)
                             })
                                 .then(response => {
@@ -349,7 +352,19 @@
                     .catch(error => console.error("Ошибка загрузки пользователя:", error));
             });
         });
+        // Обработчик события закрытия модального окна
+        document.getElementById("editUserModal").addEventListener("hidden.bs.modal", function () {
+            // Удаляем backdrop
+            const backdrop = document.querySelector(".modal-backdrop");
+            if (backdrop) {
+                backdrop.remove();
+            }
+
+            // Очищаем форму
+            document.getElementById("editUserForm").reset();
+        });
     });
+
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -361,8 +376,8 @@
                     .then(response => response.json())
                     .then(user => {
                         document.getElementById("deleteUserId").value = user.id;
-                        document.getElementById("deleteUserName").value = user.name;
-                        document.getElementById("deleteUserUsername").value = user.username;
+                        document.getElementById("deleteUserFirstName").value = user.firstName;
+                        document.getElementById("deleteUserLastName").value = user.lastName;
                         document.getElementById("deleteUserAge").value = user.age;
                         document.getElementById("deleteUserEmail").value = user.email;
                         document.getElementById("deleteUserRoles").value = user.roles;
@@ -375,7 +390,7 @@
                         document.getElementById("deleteUserForm").onsubmit = function (event) {
                             event.preventDefault();
 
-                            fetch(`/admin/api/delete/${userId}`, { method: "DELETE" })
+                            fetch(`/admin/api/delete/${userId}`, {method: "DELETE"})
                                 .then(response => {
                                     if (response.ok) {
                                         location.reload(); // Перезагружаем страницу после удаления
@@ -388,6 +403,17 @@
                     })
                     .catch(error => console.error("Ошибка загрузки пользователя:", error));
             });
+        });
+        // Обработчик события закрытия модального окна
+        document.getElementById("deleteUserModal").addEventListener("hidden.bs.modal", function () {
+            // Удаляем backdrop
+            const backdrop = document.querySelector(".modal-backdrop");
+            if (backdrop) {
+                backdrop.remove();
+            }
+
+            // Очищаем форму
+            document.getElementById("deleteUserForm").reset();
         });
     });
 </script>
