@@ -88,7 +88,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
     @Transactional
     public User save(User user) {
-        return userRepository.save(user);
+        if (user.getPassword().matches("\\A\\$2(a|y|b)?\\$(\\d\\d)\\$[./0-9A-Za-z]{53}")) {
+            return userRepository.save(user);
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            return userRepository.save(user);
+        }
     }
 }
 

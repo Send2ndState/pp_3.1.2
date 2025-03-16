@@ -5,23 +5,26 @@ import ru.kata.spring.boot_security.demo.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 @RestController
-@RequestMapping("/api/v1/user")
-public class UserResource {
+@RequestMapping("/admin/api")
+public class AdminResource {
 
     private final UserService userService;
 
     @Autowired
-    public UserResource(UserService userService) {
+    public AdminResource(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping("/{userId}")
     public User findById(@PathVariable Long userId) {
         return userService.findById(userId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+    }
+
+    @DeleteMapping("/delete/{userId}")
+    public void deleteById(@PathVariable Long userId) {
+        userService.deleteUser(userId);
     }
 
     @PostMapping
