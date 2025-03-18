@@ -16,12 +16,12 @@
 </head>
 <body>
 
-<nav class="navbar bg-dark" th:object="${user}">
+<nav class="navbar bg-dark">
     <div class="container-fluid px-3">
         <div class="col">
-            <b><span class="text-white" th:text="*{email}">Email</span></b>
+            <b><span id="user-email" class="text-white">Email</span></b>
             <span class="text-white">with roles: </span>
-            <span class="text-white" th:text="*{getStringRoles()}">Roles</span>
+            <span id="user-roles" class="text-white">Roles</span>
         </div>
         <a class="nav-link text-white-50" href="/logout">Logout</a>
     </div>
@@ -29,7 +29,6 @@
 
 <div class="container-fluid px-3">
     <div class="row">
-        <!-- Боковая панель -->
         <nav class="col-md-2 d-md-block bg-white sidebar">
             <div class="position-sticky">
                 <div class="container-fluid py-3">
@@ -42,43 +41,62 @@
             </div>
         </nav>
 
-        <!-- Основное содержимое -->
         <main class="col-md-10 ms-sm-auto px-md-4 bg-light min-vh-100">
             <div class="tab-content">
-                <!-- User Profile -->
-                    <div class="container-fluid py-3 px-0">
-                        <h2>User information-page</h2>
-                    </div>
-                    <div class="p-3 px-4 border-top">
-                        <h5>About user</h5>
-                    </div>
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Age</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:object="${user}">
-                            <td th:text="*{id}"></td>
-                            <td th:text="*{firstName}"></td>
-                            <td th:text="*{lastName}"></td>
-                            <td th:text="*{age}"></td>
-                            <td th:text="*{email}"></td>
-                            <td th:text="${user.getStringRoles()}"></td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div class="container-fluid py-3 px-0">
+                    <h2>User information-page</h2>
                 </div>
+                <div class="p-3 px-4 border-top">
+                    <h5>About user</h5>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Age</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                    </thead>
+                    <tbody id="currentUser"></tbody>
+                </table>
+            </div>
 
         </main>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+<script>
+    fetch('/user/api/current-user')
+        .then(response => response.json())
+        .then(user => {
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-roles').textContent = user.stringRoles;
+        })
+        .catch(error => console.error('Error fetching user data:', error));
+</script>
+<script>
+    fetch('/user/api/current-user')
+        .then(response => response.json())
+        .then(user => {
+            const tbody = document.getElementById('currentUser');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.id}</td>
+                        <td>${user.firstName}</td>
+                        <td>${user.lastName}</td>
+                        <td>${user.age}</td>
+                        <td>${user.email}</td>
+                        <td>${user.roles.map(role => role.role).join(" ")}</td>
+            `;
+            tbody.appendChild(row);
+        })
+        .catch(error => console.error('Error fetching user data:', error));
+</script>
 </body>
 </html>

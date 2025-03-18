@@ -1,24 +1,23 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.entities.User;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
+import ru.kata.spring.boot_security.demo.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/admin")
+
+@RestController
+@RequestMapping("/admin/api")
 public class AdminController {
 
-    private UserService userService;
-    private RoleService roleService;
-
-    public AdminController() {
-    }
+    private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
     public AdminController(UserService userService, RoleService roleService) {
@@ -26,48 +25,37 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-    @GetMapping
-    public String adminPanel(Model model) {
-        User admin = userService.getCurrentUser();
-        model.addAttribute("userView", admin);
-
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("users", users);
-        model.addAttribute("roles", roleService.getAllRoles());
-
-        model.addAttribute("userNew", new User());
-
-        return "admin-page";
+    @GetMapping("/{userId}")
+    public User findById(@PathVariable Long userId) {
+        return userService.findById(userId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     }
 
-    @PostMapping("/submit")
-    public String createUser(@ModelAttribute("userNew") User userNew) {
-        userService.saveUser(userNew);
-        return "redirect:/admin";
+    @DeleteMapping("/delete/{userId}")
+    public void deleteById(@PathVariable Long userId) {
+        userService.deleteUser(userId);
     }
 
-    @PostMapping("/delete")
-    public String deleteUser(@RequestParam("id") Long id) {
-        userService.deleteUser(id);
-        return "redirect:/admin";
+    @GetMapping("/roles")
+    public List<Role> getAllRoles() {
+        return roleService.getAllRoles();
     }
 
-    @PostMapping("/edit")
-    public String editUser(@ModelAttribute("user") User user) {
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @PostMapping("/save-user")
+    public ResponseEntity<HttpStatus> addUser(@RequestBody User user) {
         userService.saveUser(user);
-        return "redirect:/admin";
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/edit/{id}")
-    @ResponseBody
-    public User getUserForEdit(@PathVariable("id") Long id) {
-        return userService.getUserById(id);
+    @GetMapping("/current-user")
+    public ResponseEntity<User> getCurrentUser() {
+        User user = userService.getCurrentUser();
+        return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/delete/{id}")
-    @ResponseBody
-    public User getUserForDelete(@PathVariable("id") Long id) {
-        return userService.getUserById(id);
-    }
 }
 

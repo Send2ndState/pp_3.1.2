@@ -12,14 +12,15 @@
         <div class="col-md-4">
             <div class="card shadow-lg p-4">
                 <div class="">
-                <h3 class="text-center pb-3">Please sign in</h3>
+                    <h3 class="text-center pb-3">Please sign in</h3>
                 </div>
                 <form method="post" th:action="@{/login}">
                     <div class="mb-3">
                         <input type="text" name="email" class="form-control" id="email" placeholder="Email address">
                     </div>
                     <div class="mb-3">
-                        <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+                        <input type="password" name="password" class="form-control" id="password"
+                               placeholder="Password">
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Sign in</button>
                 </form>

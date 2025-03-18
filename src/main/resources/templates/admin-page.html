@@ -20,17 +20,16 @@
 </head>
 <body>
 
-<nav class="navbar bg-dark" th:object="${userView}">
+<nav class="navbar bg-dark">
     <div class="container-fluid px-3">
         <div class="col">
-            <b><span class="text-white" th:text="*{email}">Email</span></b>
+            <b><span id="user-email" class="text-white">Email</span></b>
             <span class="text-white">with roles: </span>
-            <span class="text-white" th:text="*{getStringRoles()}">Roles</span>
+            <span id="user-roles" class="text-white">Roles</span>
         </div>
         <a class="nav-link text-white-50" href="/logout">Logout</a>
     </div>
 </nav>
-
 <div class="container-fluid px-3">
     <div class="row">
         <!-- Боковая панель -->
@@ -49,10 +48,8 @@
             </div>
         </nav>
 
-        <!-- Основное содержимое -->
         <main class="col-md-10 ms-sm-auto px-md-4 bg-light min-vh-100">
             <div class="tab-content">
-                <!-- Admin Panel -->
                 <div class="tab-pane fade show active" id="admin">
                     <div class="container-fluid py-3 px-0">
                         <h2>Admin Panel</h2>
@@ -68,7 +65,6 @@
                     </ul>
 
                     <div class="tab-content mt-3">
-                        <!-- Users Table -->
                         <div class="tab-pane fade show active" id="users-table">
                             <div class="pb-2 px-4">
                                 <h5>All users</h5>
@@ -86,13 +82,10 @@
                                     <th>Delete</th>
                                 </tr>
                                 </thead>
-                                <tbody id="users-body">
-                                <!-- Users will be loaded here by JavaScript -->
-                                </tbody>
+                                <tbody id="users-body"></tbody>
                             </table>
                         </div>
 
-                        <!-- New User Form -->
                         <div class="tab-pane fade" id="new-user">
                             <div class="pb-2 px-4">
                                 <h5>Add new user</h5>
@@ -125,7 +118,6 @@
                 </div>
             </div>
 
-            <!-- User Profile -->
             <div class="tab-pane fade" id="user">
                 <div class="container-fluid py-3 px-0">
                     <h2>User information-page</h2>
@@ -144,23 +136,13 @@
                         <th>Role</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr th:object="${userView}">
-                        <td th:text="*{id}"></td>
-                        <td th:text="*{firstName}"></td>
-                        <td th:text="*{lastName}"></td>
-                        <td th:text="*{age}"></td>
-                        <td th:text="*{email}"></td>
-                        <td th:text="${userView.getStringRoles()}"></td>
-                    </tr>
-                    </tbody>
+                    <tbody id="currentUser"></tbody>
                 </table>
             </div>
         </main>
     </div>
 </div>
 
-<!-- Modal for Editing User -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -196,10 +178,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editUserRoles" class="form-label">Roles</label>
-                            <select class="form-select" id="editUserRoles" multiple>
-                                <option th:each="role : *{roles}" th:value="${role.id}" th:role="${role.name}"
-                                        th:text="${role.toString()}"></option>
-                            </select>
+                            <select class="form-select" id="editUserRoles" multiple></select>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -212,7 +191,6 @@
     </div>
 </div>
 
-<!-- Delete User Modal -->
 <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -222,7 +200,6 @@
             <div class="modal-body">
                 <div class="row justify-content-center">
                     <form id="deleteUserForm" style="max-width: 350px;" class="col text-center fw-bold">
-                        <!--                    <input type="hidden" id="editUserId">-->
                         <div class="mb-3">
                             <label for="deleteUserId" class="form-label">ID</label>
                             <input disabled type="text" class="form-control" id="deleteUserId" required>
@@ -245,10 +222,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="deleteUserRoles" class="form-label">Roles</label>
-                            <select disabled class="form-select" id="deleteUserRoles" multiple>
-                                <option th:each="role : ${roles}" th:value="${role.id}"
-                                        th:text="${role.toString()}"></option>
-                            </select>
+                            <select disabled class="form-select" id="deleteUserRoles" multiple></select>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -272,6 +246,8 @@
     document.addEventListener("DOMContentLoaded", () => {
         loadUsers();
         loadRoles();
+        loadEditRoles();
+        loadDeleteRoles();
 
         document.getElementById("userForm").addEventListener("submit", function (e) {
             e.preventDefault();
@@ -293,7 +269,7 @@
                         <td>${user.lastName}</td>
                         <td>${user.age}</td>
                         <td>${user.email}</td>
-                        <td>${user.roles.map(role => role.name).join(", ")}</td>
+                        <td>${user.roles.map(role => role.role).join(" ")}</td>
                         <td>
                             <button class="btn btn-primary btn-sm" onclick="editUser(${user.id})">Edit</button>
                         </td>
@@ -314,7 +290,35 @@
                 roles.forEach(role => {
                     const option = document.createElement("option");
                     option.value = role.id;
-                    option.textContent = role.name;
+                    option.textContent = role.role;
+                    rolesSelect.appendChild(option);
+                });
+            });
+    }
+
+    function loadEditRoles() {
+        fetch("/admin/api/roles")
+            .then(response => response.json())
+            .then(roles => {
+                const rolesSelect = document.getElementById("editUserRoles");
+                roles.forEach(role => {
+                    const option = document.createElement("option");
+                    option.value = role.id;
+                    option.textContent = role.role;
+                    rolesSelect.appendChild(option);
+                });
+            });
+    }
+
+    function loadDeleteRoles() {
+        fetch("/admin/api/roles")
+            .then(response => response.json())
+            .then(roles => {
+                const rolesSelect = document.getElementById("deleteUserRoles");
+                roles.forEach(role => {
+                    const option = document.createElement("option");
+                    option.value = role.id;
+                    option.textContent = role.role;
                     rolesSelect.appendChild(option);
                 });
             });
@@ -327,12 +331,12 @@
             age: document.getElementById("age").value,
             email: document.getElementById("email").value,
             password: document.getElementById("password").value,
-            roles: Array.from(document.getElementById("roles").selectedOptions).map(option => ({ id: option.value }))
+            roles: Array.from(document.getElementById("roles").selectedOptions).map(option => ({id: option.value}))
         };
 
-        fetch("/admin/api/save_user", {
+        fetch("/admin/api/save-user", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(user)
         }).then(() => {
             loadUsers();
@@ -353,16 +357,11 @@
                 document.getElementById("editUserEmail").value = user.email;
                 document.getElementById("editUserRoles").value = user.roles;
 
-                // Открываем модальное окно
                 const editModal = new bootstrap.Modal(document.getElementById("editUserModal"));
                 editModal.show();
 
-                // Обработчик кнопки "Save"
                 document.getElementById("editUserForm").onsubmit = function (event) {
                     event.preventDefault();
-
-                    const selectedRoles = Array.from(document.getElementById("editUserRoles").selectedOptions)
-                        .map(option => ({id: option.value, name: option.role}));
 
                     const updatedUser = {
                         id: document.getElementById("editUserId").value,
@@ -371,17 +370,22 @@
                         age: document.getElementById("editUserAge").value,
                         email: document.getElementById("editUserEmail").value,
                         password: document.getElementById("editUserPassword").value,
-                        roles: selectedRoles
+                        roles: Array.from(document.getElementById("editUserRoles").selectedOptions).map(option => ({id: option.value}))
                     };
 
-                    fetch(`/admin/api/save_user`, {
+                    fetch(`/admin/api/save-user`, {
                         method: "POST",
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(updatedUser)
                     })
                         .then(response => {
                             if (response.ok) {
-                                location.reload(); // Перезагружаем страницу после обновления
+                                loadUsers();
+                                document.getElementById("userForm").reset()
+                                let editUserModal = bootstrap.Modal.getInstance(document.getElementById("editUserModal"));
+                                if (editUserModal) {
+                                    editUserModal.hide();
+                                }
                             } else {
                                 console.error("Ошибка обновления пользователя");
                             }
@@ -392,18 +396,14 @@
             .catch(error => console.error("Ошибка загрузки пользователя:", error));
 
 
-    // Обработчик события закрытия модального окна
-    document.getElementById("editUserModal").addEventListener("hidden.bs.modal", function () {
-        // Удаляем backdrop
-        const backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) {
-            backdrop.remove();
-        }
+        document.getElementById("editUserModal").addEventListener("hidden.bs.modal", function () {
 
-        // Очищаем форму
-        document.getElementById("editUserForm").reset();
-    });
-
+            const backdrop = document.querySelector(".modal-backdrop");
+            if (backdrop) {
+                backdrop.remove();
+            }
+            document.getElementById("editUserForm").reset();
+        });
     }
 
     function deleteUser(userId) {
@@ -417,18 +417,23 @@
                 document.getElementById("deleteUserEmail").value = user.email;
                 document.getElementById("deleteUserRoles").value = user.roles;
 
-                // Открываем модальное окно
+
                 const deleteModal = new bootstrap.Modal(document.getElementById("deleteUserModal"));
                 deleteModal.show();
 
-                // Обработчик кнопки "Delete"
+
                 document.getElementById("deleteUserForm").onsubmit = function (event) {
                     event.preventDefault();
 
                     fetch(`/admin/api/delete/${userId}`, {method: "DELETE"})
                         .then(response => {
                             if (response.ok) {
-                                location.reload(); // Перезагружаем страницу после удаления
+                                loadUsers();
+                                document.getElementById("userForm").reset()
+                                let deleteUserModal = bootstrap.Modal.getInstance(document.getElementById("deleteUserModal"));
+                                if (deleteUserModal) {
+                                    deleteUserModal.hide();
+                                }
                             } else {
                                 console.error("Ошибка удаления пользователя");
                             }
@@ -439,19 +444,44 @@
             .catch(error => console.error("Ошибка загрузки пользователя:", error));
 
 
-    // Обработчик события закрытия модального окна
-    document.getElementById("deleteUserModal").addEventListener("hidden.bs.modal", function () {
-        // Удаляем backdrop
-        const backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) {
-            backdrop.remove();
-        }
+        document.getElementById("deleteUserModal").addEventListener("hidden.bs.modal", function () {
 
-        // Очищаем форму
-        document.getElementById("deleteUserForm").reset();
-    });
+            const backdrop = document.querySelector(".modal-backdrop");
+            if (backdrop) {
+                backdrop.remove();
+            }
+
+            document.getElementById("deleteUserForm").reset();
+        });
 
     }
+</script>
+<script>
+    fetch('/admin/api/current-user')
+        .then(response => response.json())
+        .then(user => {
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-roles').textContent = user.stringRoles;
+        })
+        .catch(error => console.error('Error fetching user data:', error));
+</script>
+<script>
+    fetch('/admin/api/current-user')
+        .then(response => response.json())
+        .then(user => {
+            const tbody = document.getElementById('currentUser');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.id}</td>
+                        <td>${user.firstName}</td>
+                        <td>${user.lastName}</td>
+                        <td>${user.age}</td>
+                        <td>${user.email}</td>
+                        <td>${user.roles.map(role => role.role).join(" ")}</td>
+            `;
+            tbody.appendChild(row);
+        })
+        .catch(error => console.error('Error fetching user data:', error));
 </script>
 </body>
 </html>

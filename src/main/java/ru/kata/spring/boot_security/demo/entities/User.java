@@ -108,7 +108,8 @@ public class User implements UserDetails {
     public Set<Role> getRoles() {
         return roles;
     }
-    public String getStringRoles(){
+
+    public String getStringRoles() {
         return roles.toString().replaceAll("^\\[|]$", "").replaceAll(",", " ");
     }
 

@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {
-        return (List<User>) userRepository.findAll();
+        return userRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional(readOnly = true)
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName(); // Получаем email текущего пользователя
+        String email = authentication.getName();
         return findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
 
@@ -91,11 +91,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
-    @Transactional
-    public User save(User user) {
-        if (!user.getPassword().matches("\\A\\$2(a|y|b)?\\$(\\d\\d)\\$[./0-9A-Za-z]{53}")) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-        return userRepository.save(user);
-    }
+
 }
